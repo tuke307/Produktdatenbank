@@ -5,13 +5,11 @@ import java.util.List;
 public class Firma {
     private int id;
     private String name;
-    //private List<Produkt> produkte;
 
     //Konstruktor
-    public Firma(int id, String name/*, List<Produkt> produkte*/) {
+    public Firma(int id, String name) {
         this.id = id;
         this.name = name;
-        //this.produkte = produkte;
     }
 
     public int getId() {
@@ -21,8 +19,4 @@ public class Firma {
     public String getName() {
         return name;
     }
-
-    /* public List<Produkt> getProdukte() {
-        return produkte;
-    } */
 }

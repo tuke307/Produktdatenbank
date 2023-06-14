@@ -1,4 +1,4 @@
-package produktdatenbank;
+package produktdatenbank.functions;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,26 +10,21 @@ import java.util.List;
 
 import produktdatenbank.model.Person;
 import produktdatenbank.model.Produkt;
+import produktdatenbank.singleton.DBSingleton;
 import produktdatenbank.model.Firma;
 import produktdatenbank.model.Freundschaft;
 import produktdatenbank.model.Besitzt;
 import produktdatenbank.model.Herstellung;
 
-
 public class DBParser {
     private String filepath;
     private String fileContent;
 
-    private List<Person> personen = new ArrayList<>();
-    private List<Produkt> produkte = new ArrayList<>();
-    private List<Firma> firmen = new ArrayList<>();
-    private List<Freundschaft> freundschaften = new ArrayList<>();
-    private List<Besitzt> besitze = new ArrayList<>();
-    private List<Herstellung> herstellungen = new ArrayList<>();
+    private DBSingleton dbSingleton;
 
     private static final String INSERT_PERSON = "New_Entity: person_id, person_name, person_gender";
     private static final String INSERT_PROUDKT = "New_Entity: product_id,product_name";
-    private static final String INSERT_FIRMA= "New_Entity: company_id,company_name";
+    private static final String INSERT_FIRMA = "New_Entity: company_id,company_name";
     private static final String INSERT_FREUNDSCHAFT = "New_Entity: person1_id,person2_id";
     private static final String INSERT_BESITZT = "New_Entity: person_id,product_id";
     private static final String INSERT_HERSTELLUNG = "New_Entity: product_id,company_id";
@@ -37,16 +32,15 @@ public class DBParser {
     public DBParser(String filepath) {
         this.filepath = filepath;
 
-        readFileToString();
-        parseContent();
+        dbSingleton = DBSingleton.getInstance();
     }
 
-    private void parseContent(){
+    public void parseContent() {
         // split fileContent into lines
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         lines.addAll(Arrays.asList(fileContent.split(System.lineSeparator())));
 
-        // iterate over lines and get index of INSERT_PERSON, INSERT_PROUDKT, INSERT_FIRMA, INSERT_FREUNDSCHAFT, INSERT_BESITZT, INSERT_HERSTELLUNG
+        // iterate over lines and get index of lines which are starting with New_Entity:*
         int indexPerson = lines.indexOf(INSERT_PERSON);
         int indexProdukt = lines.indexOf(INSERT_PROUDKT);
         int indexFirma = lines.indexOf(INSERT_FIRMA);
@@ -54,58 +48,52 @@ public class DBParser {
         int indexBesitzt = lines.indexOf(INSERT_BESITZT);
         int indexHerstellung = lines.indexOf(INSERT_HERSTELLUNG);
 
-        // lower bound is inclusive, The upper bound is exclusive
+        // subList: lower bound is inclusive, The upper bound is exclusive
         List<String> listPerson = lines.subList(indexPerson + 1, indexProdukt);
         List<String> listProdukt = lines.subList(indexProdukt + 1, indexFirma);
         List<String> listFirma = lines.subList(indexFirma + 1, indexFreundschaft);
         List<String> listFreundschaft = lines.subList(indexFreundschaft + 1, indexBesitzt);
         List<String> listBesitzt = lines.subList(indexBesitzt + 1, indexHerstellung);
         List<String> listHerstellung = lines.subList(indexHerstellung + 1, lines.size());
-        
+
         // iterate over listPerson and create Person objects
         for (String line : listPerson) {
             String[] person = line.split(",", -1);
-            Person p = new Person(Integer.parseInt(person[0]), person[1], person[2]);
-            personen.add(p);
+            dbSingleton.addPerson(Integer.parseInt(person[0]), person[1], person[2]);
         }
 
         // iterate over listProdukt and create Produkt objects
         for (String line : listProdukt) {
-            String[] produkt = line.split(",");
-            Produkt p = new Produkt(Integer.parseInt(produkt[0]), produkt[1]);
-            produkte.add(p);
+            String[] produkt = line.split(",", -1);
+            dbSingleton.addProdukt(Integer.parseInt(produkt[0]), produkt[1]);
         }
 
         // iterate over listFirma and create Firma objects
         for (String line : listFirma) {
-            String[] firma = line.split(",");
-            Firma f = new Firma(Integer.parseInt(firma[0]), firma[1]);
-            firmen.add(f);
+            String[] firma = line.split(",", -1);
+            dbSingleton.addFirma(Integer.parseInt(firma[0]), firma[1]);
         }
 
         // iterate over listFreundschaft and create Freundschaft objects
         for (String line : listFreundschaft) {
-            String[] freundschaft = line.split(",");
-            Freundschaft f = new Freundschaft(Integer.parseInt(freundschaft[0]), Integer.parseInt(freundschaft[1]));
-            freundschaften.add(f);
+            String[] freundschaft = line.split(",", -1);
+            dbSingleton.addFreundschaft(Integer.parseInt(freundschaft[0]), Integer.parseInt(freundschaft[1]));
         }
 
         // iterate over listBesitzt and create Besitzt objects
         for (String line : listBesitzt) {
-            String[] besitzt = line.split(",");
-            Besitzt b = new Besitzt(Integer.parseInt(besitzt[0]), Integer.parseInt(besitzt[1]));
-            besitze.add(b);
+            String[] besitzt = line.split(",", -1);
+            dbSingleton.addBesitzt(Integer.parseInt(besitzt[0]), Integer.parseInt(besitzt[1]));
         }
 
         // iterate over listHerstellung and create Herstellung objects
         for (String line : listHerstellung) {
-            String[] herstellung = line.split(",");
-            Herstellung h = new Herstellung(Integer.parseInt(herstellung[0]), Integer.parseInt(herstellung[1]));
-            herstellungen.add(h);
+            String[] herstellung = line.split(",", -1);
+            dbSingleton.addHerstellung(Integer.parseInt(herstellung[0]), Integer.parseInt(herstellung[1]));
         }
     }
 
-    private void readFileToString() {
+    public void readFile() {
         File f = new File(this.filepath);
         this.fileContent = "";
 
@@ -116,12 +104,14 @@ public class DBParser {
                 this.fileContent += line + System.lineSeparator();
             }
 
-            this.fileContent = this.fileContent.replaceAll("\"", "");
+            // replacements
+            this.fileContent = this.fileContent.replaceAll("\"", ""); // Entfernt Anführungszeichen
+            this.fileContent = this.fileContent.replaceAll("(?m)^[ \t]*\r?\n", ""); // Entfernt Leerzeilen
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     public String getFilepath() {
         return filepath;
     }

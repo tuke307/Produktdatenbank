@@ -22,4 +22,9 @@ public class Person {
     public String getGeschlecht() {
         return geschlecht;
     }
+
+    @Override
+    public String toString() {
+        return "Person [id=" + id + ", name=" + name + ", geschlecht=" + geschlecht + "]";
+    }
 }

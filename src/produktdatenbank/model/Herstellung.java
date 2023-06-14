@@ -1,19 +1,19 @@
 package produktdatenbank.model;
 
 public class Herstellung {
-    private int produkt_id;
-    private int firma_id;
+    private int produktId;
+    private int firmaId;
 
-    public Herstellung(int produkt_id, int firma_id) {
-        this.produkt_id = produkt_id;
-        this.firma_id = firma_id;
+    public Herstellung(int produktId, int firmaId) {
+        this.produktId = produktId;
+        this.firmaId = firmaId;
     }
 
-    public int getProdukt_id() {
-        return produkt_id;
+    public int getProduktId() {
+        return produktId;
     }
 
-    public int getFirma_id() {
-        return firma_id;
+    public int getFirmaId() {
+        return firmaId;
     }
 }

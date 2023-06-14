@@ -1,4 +1,4 @@
-package produktdatenbank;
+package produktdatenbank.testing;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
