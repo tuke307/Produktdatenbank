@@ -1,22 +1,11 @@
 package produktdatenbank.model;
 
-public class Person {
-    private int id;
-    private String name;
+public class Person extends Object {
     private String geschlecht;
 
     public Person(int id, String name, String geschlecht) {
-        this.id = id;
-        this.name = name;
+        super(id, name);
         this.geschlecht = geschlecht;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getGeschlecht() {
@@ -25,6 +14,6 @@ public class Person {
 
     @Override
     public String toString() {
-        return "Person [id=" + id + ", name=" + name + ", geschlecht=" + geschlecht + "]";
+        return "Person [id=" + getId() + ", name=" + getName() + ", geschlecht=" + geschlecht + "]";
     }
 }

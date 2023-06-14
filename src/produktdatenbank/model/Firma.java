@@ -2,21 +2,14 @@ package produktdatenbank.model;
 
 import java.util.List;
 
-public class Firma {
-    private int id;
-    private String name;
+public class Firma extends Object {
 
-    //Konstruktor
     public Firma(int id, String name) {
-        this.id = id;
-        this.name = name;
+        super(id, name);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
+    @Override
+    public String toString() {
+        return "Firma [id=" + getId() + ", name=" + getName() + "]";
     }
 }

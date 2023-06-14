@@ -1,6 +1,8 @@
 package produktdatenbank.singleton;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -42,12 +44,42 @@ public class DBSingleton {
         return personen;
     }
 
+    public Person getPersonById(int id) {
+        for (Person person : personen) {
+            if (person.getId() == id) {
+                return person;
+            }
+        }
+
+        return null;
+    }
+
     public List<Produkt> getProdukte() {
         return produkte;
     }
 
+    public Produkt getProduktById(int id) {
+        for (Produkt produkt : produkte) {
+            if (produkt.getId() == id) {
+                return produkt;
+            }
+        }
+
+        return null;
+    }
+
     public List<Firma> getFirmen() {
         return firmen;
+    }
+
+    public Firma getFirmaById(int id) {
+        for (Firma firma : firmen) {
+            if (firma.getId() == id) {
+                return firma;
+            }
+        }
+
+        return null;
     }
 
     public List<Freundschaft> getFreundschaften() {
@@ -120,17 +152,19 @@ public class DBSingleton {
      * @param personId1 person id 1
      * @param personId2 person id 2
      */
-    public void addFreundschaft(int personId1, int personId2) {
-        // freundschaft is bidirectional, so we need to check both directions
+    public void addFreundschaft(int personId1, int personId2, boolean bidirectional) {
+        // check if freundschaft already exists by checking personId1 and personId2
         for (Freundschaft f : freundschaften) {
-            if ((f.getPerson_id1() == personId1 && f.getPerson_id2() == personId2)
-                    || (f.getPerson_id1() == personId2 && f.getPerson_id2() == personId1)) {
+            if (f.getPerson_id1() == personId1 && f.getPerson_id2() == personId2) {
                 logger.warning("Freundschaft with personId1 " + personId1 + " and personId2 " + personId2
                         + " already exists and will not be imported.");
             }
         }
 
+        // freundschaft is bidirectional, so we need to add two both ways
         freundschaften.add(new Freundschaft(personId1, personId2));
+        if (bidirectional)
+            freundschaften.add(new Freundschaft(personId2, personId1));
     }
 
     /*
@@ -207,14 +241,52 @@ public class DBSingleton {
         return result;
     }
 
-    public List<Freundschaft> getFreundschaftenForPerson(int person_id) {
-        List<Freundschaft> result = new ArrayList<>();
-        for (Freundschaft f : freundschaften) {
-            if (f.getPerson_id1() == person_id || f.getPerson_id2() == person_id) {
-                result.add(f);
+    /**
+     * Search for all products, that friends from the passed person buyed
+     * 
+     * @param personId
+     * @return all products
+     */
+    private List<Produkt> produkteFromFreundschaft(Integer personId) {
+        List<Person> freundschaftenFromPerson = new ArrayList<>();
+        List<Produkt> produkteFromFreundschaften = new ArrayList<>();
+
+        // get all friends of the person
+        for (Freundschaft freundschaft : freundschaften) {
+            if (freundschaft.getPerson_id1() == personId) {
+                freundschaftenFromPerson.add(getPersonById(freundschaft.getPerson_id2()));
             }
         }
-        return result;
+
+        // get all products from the friends
+        // duplicate products will be ignored
+        for (Person person : freundschaftenFromPerson) {
+            // iterate over all käufe
+            for (Besitzt besitzt : besitze) {
+                // if friend buyed a product
+                if (besitzt.getPersonId() == person.getId()) {
+                    // retrieve product and add it to the list, if not already in list
+                    Produkt produkt = getProduktById(besitzt.getProduktId());
+
+                    if (!produkteFromFreundschaften.contains(produkt)) {
+                        produkteFromFreundschaften.add(produkt);
+                    }
+                }
+            }
+        }
+
+        // order list by alphabatic order of product name
+        Collections.sort(produkteFromFreundschaften, new Comparator<Produkt>() {
+
+            @Override
+            public int compare(Produkt produkt1, Produkt produkt2) {
+                return produkt1.getName().compareTo(produkt2.getName());
+            }
+
+        });
+
+
+        return produkteFromFreundschaften;
     }
 
     /**
@@ -225,26 +297,16 @@ public class DBSingleton {
      */
     public String produktnetzwerk(Integer personId) {
         String result = "";
-        List<Freundschaft> freundschaftenWithPerson = new ArrayList<>();
+        List<Produkt> produkteFromFreundschaften = produkteFromFreundschaft(personId);
 
-        // get all friends of the person
-        for (Freundschaft f : freundschaften) {
-            if (f.getPerson_id1() == personId || f.getPerson_id2() == personId) {
-                freundschaftenWithPerson.add(f);
-            }
+        // create result string
+        for (Produkt produkt : produkteFromFreundschaften) {
+            result += produkt.getName() + ", ";
         }
 
-        // get all products of the friends
-        for (Freundschaft f : freundschaftenWithPerson) {
-            for (Besitzt b : besitze) {
-                if (b.getPersonId() == f.getPerson_id1() || b.getPersonId() == f.getPerson_id2()) {
-                    for (Produkt p : produkte) {
-                        if (p.getId() == b.getProduktId()) {
-                            result += p.getName() + ", ";
-                        }
-                    }
-                }
-            }
+        // remove last comma
+        if (result.length() > 0) {
+            result = result.substring(0, result.length() - 2);
         }
 
         if (result.isEmpty()) {
@@ -254,20 +316,49 @@ public class DBSingleton {
         return result;
     }
 
-    public String firmennetzwerk(Integer firmaId) {
+    /**
+     * Search for all companies, that produce products, that friends from the passed person have buyed
+     * @param personId
+     * @return
+     */
+    public String firmennetzwerk(Integer personId) {
         String result = "";
+        List<Firma> firmenFromFreundschaften = new ArrayList<>();
+        List<Produkt> produkteFromFreundschaften = produkteFromFreundschaft(personId);
 
-        /*
-         * for (Herstellung herstellung : herstellungen) {
-         * if (herstellung.getFirmaId() == Integer.parseInt(firmaId)) {
-         * for (Produkt produkt : produkte) {
-         * if (produkt.getId() == herstellung.getProduktId()) {
-         * result += produkt.toString() + System.lineSeparator();
-         * }
-         * }
-         * }
-         * }
-         */
+
+        // search for companies that produce the products
+        for (Produkt produkt : produkteFromFreundschaften) {
+            for (Herstellung herstellung : herstellungen) {
+                if (herstellung.getProduktId() == produkt.getId()) {
+                    Firma firma = getFirmaById(herstellung.getFirmaId());
+
+                    if(!firmenFromFreundschaften.contains(firma)) {
+                        firmenFromFreundschaften.add(firma);
+                    }
+                }
+            }
+        }
+
+        // order list by alphabatic order of company name
+        Collections.sort(firmenFromFreundschaften, new Comparator<Firma>() {
+
+            @Override
+            public int compare(Firma firma1, Firma firma2) {
+                return firma1.getName().compareTo(firma2.getName());
+            }
+        });
+
+        // create result string
+        for (Firma firma : firmenFromFreundschaften) {
+            result += firma.getName() + ", ";
+        }
+
+        // remove last comma
+        if (result.length() > 0) {
+            result = result.substring(0, result.length() - 2);
+        }
+
 
         if (result.isEmpty()) {
             result = "Nichts zum Firmennetzwerk gefunden.";
@@ -277,6 +368,7 @@ public class DBSingleton {
     }
 
     // endregion
+
 
     public void clear() {
         personen.clear();

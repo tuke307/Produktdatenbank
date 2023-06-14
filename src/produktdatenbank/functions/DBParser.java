@@ -77,7 +77,7 @@ public class DBParser {
         // iterate over listFreundschaft and create Freundschaft objects
         for (String line : listFreundschaft) {
             String[] freundschaft = line.split(",", -1);
-            dbSingleton.addFreundschaft(Integer.parseInt(freundschaft[0]), Integer.parseInt(freundschaft[1]));
+            dbSingleton.addFreundschaft(Integer.parseInt(freundschaft[0]), Integer.parseInt(freundschaft[1]), false);
         }
 
         // iterate over listBesitzt and create Besitzt objects
