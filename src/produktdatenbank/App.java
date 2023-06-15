@@ -28,7 +28,7 @@ public class App {
         //args = new String[] { "--personensuche=Roger" };
         //args = new String[] { "--produktsuche=iPad" };
         //args = new String[] { "--produktnetzwerk=181" };
-        args = new String[] { "--firmennetzwerk=181" };
+        //args = new String[] { "--firmennetzwerk=181" };
 
         for (String arg : args) {
             if (arg.startsWith(ArgPersonensuche)) {

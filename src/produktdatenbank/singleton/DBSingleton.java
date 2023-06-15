@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import produktdatenbank.model.Besitzt;
 import produktdatenbank.model.Firma;
@@ -276,15 +277,8 @@ public class DBSingleton {
         }
 
         // order list by alphabatic order of product name
-        Collections.sort(produkteFromFreundschaften, new Comparator<Produkt>() {
-
-            @Override
-            public int compare(Produkt produkt1, Produkt produkt2) {
-                return produkt1.getName().compareTo(produkt2.getName());
-            }
-
-        });
-
+        // TODO: not working properly
+        produkteFromFreundschaften.sort((a, b) -> a.getName().compareTo(b.getName()));
 
         return produkteFromFreundschaften;
     }
@@ -298,6 +292,13 @@ public class DBSingleton {
     public String produktnetzwerk(Integer personId) {
         String result = "";
         List<Produkt> produkteFromFreundschaften = produkteFromFreundschaft(personId);
+
+        // get products, which the passed person buyed
+        List<Produkt> produkteFromPerson = besitze.stream().filter(b -> b.getPersonId() == personId)
+                .map(b -> getProduktById(b.getProduktId())).collect(Collectors.toList());
+
+        // remove products, which the passed person already buyed
+        produkteFromFreundschaften.removeAll(produkteFromPerson);
 
         // create result string
         for (Produkt produkt : produkteFromFreundschaften) {
@@ -317,7 +318,9 @@ public class DBSingleton {
     }
 
     /**
-     * Search for all companies, that produce products, that friends from the passed person have buyed
+     * Search for all companies, that produce products, that friends from the passed
+     * person have buyed
+     * 
      * @param personId
      * @return
      */
@@ -326,19 +329,39 @@ public class DBSingleton {
         List<Firma> firmenFromFreundschaften = new ArrayList<>();
         List<Produkt> produkteFromFreundschaften = produkteFromFreundschaft(personId);
 
-
         // search for companies that produce the products
         for (Produkt produkt : produkteFromFreundschaften) {
             for (Herstellung herstellung : herstellungen) {
                 if (herstellung.getProduktId() == produkt.getId()) {
                     Firma firma = getFirmaById(herstellung.getFirmaId());
 
-                    if(!firmenFromFreundschaften.contains(firma)) {
+                    if (!firmenFromFreundschaften.contains(firma)) {
                         firmenFromFreundschaften.add(firma);
                     }
                 }
             }
         }
+
+        // get products, which the passed person buyed
+        List<Produkt> produkteFromPerson = besitze.stream().filter(b -> b.getPersonId() == personId)
+                .map(b -> getProduktById(b.getProduktId())).collect(Collectors.toList());
+
+        // get companies, from products that the passed person buyed
+        List<Firma> firmenFromPerson = new ArrayList<>();
+        for (Produkt produkt : produkteFromPerson) {
+            for (Herstellung herstellung : herstellungen) {
+                if (herstellung.getProduktId() == produkt.getId()) {
+                    Firma firma = getFirmaById(herstellung.getFirmaId());
+
+                    if (!firmenFromPerson.contains(firma)) {
+                        firmenFromPerson.add(firma);
+                    }
+                }
+            }
+        }
+
+        // remove companies, which the passed person already buyed products from
+        firmenFromFreundschaften.removeAll(firmenFromPerson);
 
         // order list by alphabatic order of company name
         Collections.sort(firmenFromFreundschaften, new Comparator<Firma>() {
@@ -359,7 +382,6 @@ public class DBSingleton {
             result = result.substring(0, result.length() - 2);
         }
 
-
         if (result.isEmpty()) {
             result = "Nichts zum Firmennetzwerk gefunden.";
         }
@@ -368,7 +390,6 @@ public class DBSingleton {
     }
 
     // endregion
-
 
     public void clear() {
         personen.clear();
