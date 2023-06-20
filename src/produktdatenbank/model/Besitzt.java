@@ -16,4 +16,9 @@ public class Besitzt {
     public int getProduktId() {
         return produktId;
     }
+
+    @Override
+    public String toString() {
+        return "Besitzt [personId=" + personId + ", produktId=" + produktId + "]";
+    }
 }

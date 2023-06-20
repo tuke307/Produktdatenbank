@@ -1,19 +1,24 @@
 package produktdatenbank.model;
 
 public class Freundschaft {
-    private int person_id1;
-    private int person_id2;
+    private int personId1;
+    private int personId2;
 
-    public Freundschaft(int person_id1, int person_id2) {
-        this.person_id1 = person_id1;
-        this.person_id2 = person_id2;
+    public Freundschaft(int personId1, int personId2) {
+        this.personId1 = personId1;
+        this.personId2 = personId2;
     }
 
-    public int getPerson_id1() {
-        return person_id1;
+    public int getPersonId1() {
+        return personId1;
     }
 
-    public int getPerson_id2() {
-        return person_id2;
+    public int getPersonId2() {
+        return personId2;
+    }
+
+    @Override
+    public String toString() {
+        return "Freundschaft [personId1=" + personId1 + ", personId2=" + personId2 + "]";
     }
 }

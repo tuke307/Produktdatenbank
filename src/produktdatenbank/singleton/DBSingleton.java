@@ -1,9 +1,12 @@
 package produktdatenbank.singleton;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -156,9 +159,10 @@ public class DBSingleton {
     public void addFreundschaft(int personId1, int personId2, boolean bidirectional) {
         // check if freundschaft already exists by checking personId1 and personId2
         for (Freundschaft f : freundschaften) {
-            if (f.getPerson_id1() == personId1 && f.getPerson_id2() == personId2) {
-                logger.warning("Freundschaft with personId1 " + personId1 + " and personId2 " + personId2
-                        + " already exists and will not be imported.");
+            if (f.getPersonId1() == personId1 && f.getPersonId2() == personId2) {
+                //logger.warning("Freundschaft with personId1 " + personId1 + " and personId2 " + personId2
+                //        + " already exists and will not be imported.");
+                return;
             }
         }
 
@@ -218,6 +222,9 @@ public class DBSingleton {
 
         if (result.isEmpty()) {
             result = "Keine Personen gefunden.";
+        }else{
+            // remove last line separator
+            result = result.substring(0, result.length() - 2);
         }
 
         return result;
@@ -238,6 +245,10 @@ public class DBSingleton {
         if (result.isEmpty()) {
             result = "Keine Produkte gefunden.";
         }
+        else{
+            // remove last line separator
+            result = result.substring(0, result.length() - 2);
+        }
 
         return result;
     }
@@ -254,8 +265,8 @@ public class DBSingleton {
 
         // get all friends of the person
         for (Freundschaft freundschaft : freundschaften) {
-            if (freundschaft.getPerson_id1() == personId) {
-                freundschaftenFromPerson.add(getPersonById(freundschaft.getPerson_id2()));
+            if (freundschaft.getPersonId1() == personId) {
+                freundschaftenFromPerson.add(getPersonById(freundschaft.getPersonId2()));
             }
         }
 
@@ -277,8 +288,8 @@ public class DBSingleton {
         }
 
         // order list by alphabatic order of product name
-        // TODO: not working properly
-        produkteFromFreundschaften.sort((a, b) -> a.getName().compareTo(b.getName()));
+        Collator deCollator = Collator.getInstance(new Locale("de", "DE"));
+        produkteFromFreundschaften.sort((a, b) -> deCollator.compare(a.getName(), b.getName()));
 
         return produkteFromFreundschaften;
     }
@@ -305,13 +316,11 @@ public class DBSingleton {
             result += produkt.getName() + ", ";
         }
 
-        // remove last comma
-        if (result.length() > 0) {
-            result = result.substring(0, result.length() - 2);
-        }
-
         if (result.isEmpty()) {
             result = "Nichts zum Produktnetzwerk gefunden.";
+        }else{
+            // remove last line separator
+            result = result.substring(0, result.length() - 2);
         }
 
         return result;
@@ -364,26 +373,20 @@ public class DBSingleton {
         firmenFromFreundschaften.removeAll(firmenFromPerson);
 
         // order list by alphabatic order of company name
-        Collections.sort(firmenFromFreundschaften, new Comparator<Firma>() {
-
-            @Override
-            public int compare(Firma firma1, Firma firma2) {
-                return firma1.getName().compareTo(firma2.getName());
-            }
-        });
+        Collator deCollator = Collator.getInstance(new Locale("de", "DE"));
+        firmenFromFreundschaften.sort((a, b) -> deCollator.compare(a.getName(), b.getName()));
 
         // create result string
         for (Firma firma : firmenFromFreundschaften) {
             result += firma.getName() + ", ";
         }
 
-        // remove last comma
-        if (result.length() > 0) {
-            result = result.substring(0, result.length() - 2);
-        }
-
         if (result.isEmpty()) {
             result = "Nichts zum Firmennetzwerk gefunden.";
+        }
+        else{
+            // remove last line separator
+            result = result.substring(0, result.length() - 2);
         }
 
         return result;

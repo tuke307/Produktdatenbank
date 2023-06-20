@@ -16,4 +16,9 @@ public class Herstellung {
     public int getFirmaId() {
         return firmaId;
     }
+
+    @Override
+    public String toString() {
+        return "Herstellung [produktId=" + produktId + ", firmaId=" + firmaId + "]";
+    }
 }
