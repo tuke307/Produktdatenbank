@@ -160,8 +160,8 @@ public class DBSingleton {
         // check if freundschaft already exists by checking personId1 and personId2
         for (Freundschaft f : freundschaften) {
             if (f.getPersonId1() == personId1 && f.getPersonId2() == personId2) {
-                //logger.warning("Freundschaft with personId1 " + personId1 + " and personId2 " + personId2
-                //        + " already exists and will not be imported.");
+                logger.warning("Freundschaft with personId1 " + personId1 + " and personId2 " + personId2
+                        + " already exists and will not be imported.");
                 return;
             }
         }
