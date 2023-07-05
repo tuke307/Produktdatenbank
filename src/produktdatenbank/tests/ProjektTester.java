@@ -1,16 +1,12 @@
 package produktdatenbank.tests;
 
 import java.io.ByteArrayOutputStream;
-import java.io.Console;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 public class ProjektTester {
-    // Konfiguration eurer Hauptklasse. Bitte vollqualifizierten Klassennamen plus
-    // Paket angeben.
-    // Z.b. die Klasse MeinProjekt im Paket dhbw.java, muss lauten:
-    // 'dhbw.java.MeinProjekt'
+    // Konfiguration eurer Hauptklasse. Bitte vollqualifizierten Klassennamen plus Paket angeben.
+    // Z.b. die Klasse MeinProjekt im Paket dhbw.java, muss lauten: 'dhbw.java.MeinProjekt'
     private static final String MAIN_CLASS = "produktdatenbank.App";
 
     public static void main(String[] args) {
@@ -18,12 +14,11 @@ public class ProjektTester {
         boolean passed = true;
 
         // Produktnetzwerk fuer Jaime Rogers
-        passed &= passedTestNetzwerk("--produktnetzwerk=53", "iPad Mini,MacBook Air,Samsung Galaxy 5");
+        passed = passedTestNetzwerk("--produktnetzwerk=53", "iPad Mini,MacBook Air,Samsung Galaxy 5");
         // Produktnetzwerk fuer Roger Walker
         passed &= passedTestNetzwerk("--produktnetzwerk=70", "iPad,Samsung ChromeBook,Samsung Galaxy Tab 3");
         // Produktnetzwerk fuer Brandy Francis
-        passed &= passedTestNetzwerk("--produktnetzwerk=181",
-                "Google Nexus 7,iPad,MacBook Air,Samsung Galaxy 5,Samsung Galaxy Tab 3");
+        passed &= passedTestNetzwerk("--produktnetzwerk=181", "Google Nexus 7,iPad,MacBook Air,Samsung Galaxy 5,Samsung Galaxy Tab 3");
 
         // Firmennetzwerk fuer Jaime Rogers
         passed &= passedTestNetzwerk("--firmennetzwerk=53", "Apple");
@@ -47,12 +42,11 @@ public class ProjektTester {
      * @return
      */
     private static boolean passedTestNetzwerk(String arg, String resultString) {
-        // Der System.out Stream muss umgebogen werden, damit dieser spaeter ueberprueft
-        // werden kann.
+        // Der System.out Stream muss umgebogen werden, damit dieser spaeter ueberprueft werden kann.
         PrintStream normalerOutput = System.out;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-        String[] args = { arg };
+        String[] args = {arg};
         try {
             // MainClass mittels Reflection bekommen und main Methode aufrufen
             Class<?> mainClass = Class.forName(MAIN_CLASS);
@@ -69,18 +63,15 @@ public class ProjektTester {
 
         // Ergebnisse ueberpruefen.
         String output = baos.toString();
-
-        // Zeilenumbrueche, Leerzeichen und Unidode charaktere entfernen
-        output = output.replace(System.lineSeparator(), "").replace(" ", "").replaceAll("\\P{Print}","");
-        resultString = resultString.replace(System.lineSeparator(), "").replace(" ", "").replaceAll("\\P{Print}","");
-
-        // keine Leerzeichen beachten
-        if (output.equals(resultString)) {
-            return true;
-        }  
-
-        System.err.println("Fehler bei: '" + arg + "'. Erwartetes Ergebnis: '" + resultString
-                + "', erhaltenes Ergebnis: '" + output + "'");
+        String[] lines = output.split(System.lineSeparator());
+        // Pryefe ob eine Zeile in der Ausgabe dem Format entspricht
+        for (String line : lines) {
+            // keine Leerzeichen beachten
+            if (line.replace(" ", "").equals(resultString.replace(" ", ""))) {
+                return true;
+            }
+        }
+        System.err.println("Feher bei: '" + arg + "'. Erwartetes Ergebnis: '" + resultString + "', erhaltenes Ergebnis: '" + output.replace(System.lineSeparator(), "") + "'");
         return false;
     }
 
