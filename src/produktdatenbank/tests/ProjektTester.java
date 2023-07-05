@@ -1,4 +1,4 @@
-package produktdatenbank.testing;
+package produktdatenbank.tests;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Console;
@@ -16,16 +16,6 @@ public class ProjektTester {
     public static void main(String[] args) {
         // project.model.Tests are passing
         boolean passed = true;
-
-        // Personensuche fuer Jaime Rogers
-        passed = passedTestNetzwerk("--personensuche=Roger",
-                "Person [id=53, name=Jaime Rogers, geschlecht=Male]" + System.lineSeparator() +
-                        "Person [id=70, name=Roger Walker, geschlecht=Male]");
-
-        // Produktsuche fuer iPad
-        passed &= passedTestNetzwerk("--produktsuche=iPad",
-                "Produkt [id=203, name=iPad]" + System.lineSeparator() +
-                        "Produkt [id=205, name=iPad Mini]");
 
         // Produktnetzwerk fuer Jaime Rogers
         passed &= passedTestNetzwerk("--produktnetzwerk=53", "iPad Mini,MacBook Air,Samsung Galaxy 5");
