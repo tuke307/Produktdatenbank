@@ -24,7 +24,7 @@ public class SearchTest {
     public static void initializeSingleton(){
         dbSingleton = DBSingleton.getInstance();
 
-        DBParser importer = new DBParser(Constants.Filepath);
+        DBParser importer = new DBParser();
         importer.readFile();
         importer.parseContent();
     }
