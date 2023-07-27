@@ -64,4 +64,34 @@ public class SearchTest {
                         "Produkt [id=209, name=Samsung Galaxy 5]" + System.lineSeparator() +
                         "Produkt [id=210, name=Samsung Galaxy Tab 3]"));
     }
+
+    @ParameterizedTest
+    @MethodSource("testProduktnetzwerk")
+    public void testProduktnetzwerk(Integer produktToSearch, String expectedString) {
+        logger.info("Produktnetzwerk fuer " + produktToSearch);
+
+        assertEquals(expectedString, dbSingleton.produktnetzwerk(produktToSearch));
+    }
+
+    static Stream<Arguments> testProduktnetzwerk() {
+        return Stream.of(
+                Arguments.of(53, "iPad Mini, MacBook Air, Samsung Galaxy 5"),
+                Arguments.of(70, "iPad, Samsung ChromeBook, Samsung Galaxy Tab 3"),
+                Arguments.of(181, "Google Nexus 7, iPad, MacBook Air, Samsung Galaxy 5, Samsung Galaxy Tab 3"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testFirmennetzwerk")
+    public void testFirmennetzwerk(Integer firmaToSearch, String expectedString) {
+        logger.info("Firmensuche fuer " + firmaToSearch);
+
+        assertEquals(expectedString, dbSingleton.firmennetzwerk(firmaToSearch));
+    }
+
+    static Stream<Arguments> testFirmennetzwerk() {
+        return Stream.of(
+                Arguments.of(53, "Apple"),
+                Arguments.of(70, "Apple, Samsung"),
+                Arguments.of(181, "Apple, Google"));
+    }
 }
