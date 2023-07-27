@@ -27,17 +27,17 @@ public class DBSingleton {
 
     private Logger logger;
 
-    private static DBSingleton single_instance = null;
+    private static DBSingleton singleInstance = null;
 
     private DBSingleton() {
         logger = Logger.getLogger(DBSingleton.class.getName());
     }
 
     public static synchronized DBSingleton getInstance() {
-        if (single_instance == null)
-            single_instance = new DBSingleton();
+        if (singleInstance == null)
+            singleInstance = new DBSingleton();
 
-        return single_instance;
+        return singleInstance;
     }
 
     // region Getter
@@ -407,13 +407,4 @@ public class DBSingleton {
     }
 
     // endregion
-
-    public void clear() {
-        personen.clear();
-        produkte.clear();
-        firmen.clear();
-        freundschaften.clear();
-        besitze.clear();
-        herstellungen.clear();
-    }
 }

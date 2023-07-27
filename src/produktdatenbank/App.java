@@ -15,7 +15,7 @@ public class App {
      */
     public static void main(String[] args) {
         DBSingleton dbSingleton = DBSingleton.getInstance();
-        DBParser importer = new DBParser(Constants.Filepath);
+        DBParser importer = new DBParser();
         importer.readFile();
         importer.parseContent();
 
@@ -36,7 +36,5 @@ public class App {
                 System.out.println("Argument not supported: " + arg);
             }
         }
-
-        dbSingleton.clear();
     }
 }

@@ -17,11 +17,9 @@ public class ImporterTest {
 
     @Test
     public void testFileImport() {
-        DBParser importer = new DBParser(Constants.Filepath);
-        importer.readFile();
+        DBParser importer = new DBParser();
 
-        assertNotNull(importer.getFileContent());
-        assertNotNull(importer.getFilepath());
+        assertNotNull(importer.readFile());
     }
 
     @Test
@@ -29,7 +27,7 @@ public class ImporterTest {
         DBSingleton dbSingleton;
         dbSingleton = DBSingleton.getInstance();
 
-        DBParser importer = new DBParser(Constants.Filepath);
+        DBParser importer = new DBParser();
         importer.readFile();
         importer.parseContent();
 

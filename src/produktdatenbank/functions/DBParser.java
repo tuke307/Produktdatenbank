@@ -8,30 +8,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import produktdatenbank.model.Person;
-import produktdatenbank.model.Produkt;
+import produktdatenbank.Constants;
 import produktdatenbank.singleton.DBSingleton;
-import produktdatenbank.model.Firma;
-import produktdatenbank.model.Freundschaft;
-import produktdatenbank.model.Besitzt;
-import produktdatenbank.model.Herstellung;
 
 public class DBParser {
-    private String filepath;
     private String fileContent;
 
     private DBSingleton dbSingleton;
 
-    private static final String INSERT_PERSON = "New_Entity: person_id, person_name, person_gender";
-    private static final String INSERT_PROUDKT = "New_Entity: product_id,product_name";
-    private static final String INSERT_FIRMA = "New_Entity: company_id,company_name";
-    private static final String INSERT_FREUNDSCHAFT = "New_Entity: person1_id,person2_id";
-    private static final String INSERT_BESITZT = "New_Entity: person_id,product_id";
-    private static final String INSERT_HERSTELLUNG = "New_Entity: product_id,company_id";
-
-    public DBParser(String filepath) {
-        this.filepath = filepath;
-
+    public DBParser() {
         dbSingleton = DBSingleton.getInstance();
     }
 
@@ -41,12 +26,12 @@ public class DBParser {
         lines.addAll(Arrays.asList(fileContent.split(System.lineSeparator())));
 
         // iterate over lines and get index of lines which are starting with New_Entity:*
-        int indexPerson = lines.indexOf(INSERT_PERSON);
-        int indexProdukt = lines.indexOf(INSERT_PROUDKT);
-        int indexFirma = lines.indexOf(INSERT_FIRMA);
-        int indexFreundschaft = lines.indexOf(INSERT_FREUNDSCHAFT);
-        int indexBesitzt = lines.indexOf(INSERT_BESITZT);
-        int indexHerstellung = lines.indexOf(INSERT_HERSTELLUNG);
+        int indexPerson = lines.indexOf(Constants.InsertPerson);
+        int indexProdukt = lines.indexOf(Constants.InsertProdukt);
+        int indexFirma = lines.indexOf(Constants.InsertFirma);
+        int indexFreundschaft = lines.indexOf(Constants.InsertFreundschaft);
+        int indexBesitzt = lines.indexOf(Constants.InsertBesitzt);
+        int indexHerstellung = lines.indexOf(Constants.InsertHerstellung);
 
         // subList: lower bound is inclusive, The upper bound is exclusive
         List<String> listPerson = lines.subList(indexPerson + 1, indexProdukt);
@@ -87,8 +72,8 @@ public class DBParser {
         }
     }
 
-    public void readFile() {
-        File f = new File(this.filepath);
+    public String readFile() {
+        File f = new File(Constants.Filepath);
         this.fileContent = "";
 
         try (BufferedReader bf = new BufferedReader(
@@ -104,10 +89,8 @@ public class DBParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
 
-    public String getFilepath() {
-        return filepath;
+        return fileContent;
     }
 
     public String getFileContent() {
