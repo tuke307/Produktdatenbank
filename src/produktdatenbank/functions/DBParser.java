@@ -56,37 +56,31 @@ public class DBParser {
         List<String> listBesitzt = lines.subList(indexBesitzt + 1, indexHerstellung);
         List<String> listHerstellung = lines.subList(indexHerstellung + 1, lines.size());
 
-        // iterate over listPerson and create Person objects
         for (String line : listPerson) {
             String[] person = line.split(",", -1);
             dbSingleton.addPerson(Integer.parseInt(person[0]), person[1], person[2]);
         }
 
-        // iterate over listProdukt and create Produkt objects
         for (String line : listProdukt) {
             String[] produkt = line.split(",", -1);
             dbSingleton.addProdukt(Integer.parseInt(produkt[0]), produkt[1]);
         }
 
-        // iterate over listFirma and create Firma objects
         for (String line : listFirma) {
             String[] firma = line.split(",", -1);
             dbSingleton.addFirma(Integer.parseInt(firma[0]), firma[1]);
         }
 
-        // iterate over listFreundschaft and create Freundschaft objects
         for (String line : listFreundschaft) {
             String[] freundschaft = line.split(",", -1);
             dbSingleton.addFreundschaft(Integer.parseInt(freundschaft[0]), Integer.parseInt(freundschaft[1]), false);
         }
 
-        // iterate over listBesitzt and create Besitzt objects
         for (String line : listBesitzt) {
             String[] besitzt = line.split(",", -1);
             dbSingleton.addBesitzt(Integer.parseInt(besitzt[0]), Integer.parseInt(besitzt[1]));
         }
 
-        // iterate over listHerstellung and create Herstellung objects
         for (String line : listHerstellung) {
             String[] herstellung = line.split(",", -1);
             dbSingleton.addHerstellung(Integer.parseInt(herstellung[0]), Integer.parseInt(herstellung[1]));

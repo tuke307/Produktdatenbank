@@ -27,14 +27,12 @@ public class DBSingleton {
 
     private Logger logger;
 
-    // Static variable reference of single_instance of type DBSingleton
     private static DBSingleton single_instance = null;
 
     private DBSingleton() {
         logger = Logger.getLogger(DBSingleton.class.getName());
     }
 
-    // Static method to create instance of Singleton class
     public static synchronized DBSingleton getInstance() {
         if (single_instance == null)
             single_instance = new DBSingleton();
@@ -102,59 +100,67 @@ public class DBSingleton {
 
     // region Setter
 
-    /*
+    /**
      * Add person to personen list
+     *
+     * @param personId        id of the person
+     * @param personName      name of the person
+     * @param personGeschlecht      geschlecht of the person
      */
-    public void addPerson(int id, String name, String geschlecht) {
+    public void addPerson(int personId, String personName, String personGeschlecht) {
         // check if person already exists by checking id
         for (Person person : personen) {
-            if (person.getId() == id) {
-                logger.warning("Person with id " + id + " already exists and will not be imported.");
+            if (person.getId() == personId) {
+                logger.warning("Person with id " + personId + " already exists and will not be imported.");
                 return;
             }
         }
 
-        personen.add(new Person(id, name, geschlecht));
+        personen.add(new Person(personId, personName, personGeschlecht));
     }
 
-    /*
+    /**
      * Add produkt to produkte list
+     *
+     * @param produktId   id of the produkt
+     * @param produktName name of the produkt
      */
-    public void addProdukt(int id, String name) {
+    public void addProdukt(int produktId, String produktName) {
         // check if produkt already exists by checking id
         for (Produkt produkt : produkte) {
-            if (produkt.getId() == id) {
-                logger.warning("Produkt with id " + id + " already exists and will not be imported.");
+            if (produkt.getId() == produktId) {
+                logger.warning("Produkt with id " + produktId + " already exists and will not be imported.");
                 return;
             }
         }
 
-        produkte.add(new Produkt(id, name));
+        produkte.add(new Produkt(produktId, produktName));
     }
 
     /**
      * Add firma to firmen list
      * 
-     * @param id   id of the firma
-     * @param name name of the firma
+     * @param firmaId id of the firma
+     * @param firmaName name of the firma
      */
-    public void addFirma(int id, String name) {
+    public void addFirma(int firmaId, String firmaName) {
         // check if firma already exists by checking id
         for (Firma firma : firmen) {
-            if (firma.getId() == id) {
-                logger.warning("Firma with id " + id + " already exists and will not be imported.");
+            if (firma.getId() == firmaId) {
+                logger.warning("Firma with id " + firmaId + " already exists and will not be imported.");
                 return;
             }
         }
 
-        firmen.add(new Firma(id, name));
+        firmen.add(new Firma(firmaId, firmaName));
     }
 
     /**
      * Add freundschaft to freundschaften list
-     * 
-     * @param personId1 person id 1
-     * @param personId2 person id 2
+     *
+     * @param personId1 id of the first person
+     * @param personId2 id of the second person
+     * @param bidirectional if true, add freundschaft both ways
      */
     public void addFreundschaft(int personId1, int personId2, boolean bidirectional) {
         // check if freundschaft already exists by checking personId1 and personId2
@@ -172,8 +178,11 @@ public class DBSingleton {
             freundschaften.add(new Freundschaft(personId2, personId1));
     }
 
-    /*
-     * Add besitzt to besitze list
+    /**
+     * Add besitzt to Besitzt list
+     *
+     * @param personId  id of the person
+     * @param produktId id of the produkt
      */
     public void addBesitzt(int personId, int produktId) {
         // check if besitzt already exists by checking personId and produktId
@@ -188,8 +197,11 @@ public class DBSingleton {
         besitze.add(new Besitzt(personId, produktId));
     }
 
-    /*
+    /**
      * Add herstellung to herstellungen list
+     *
+     * @param firmaId   id of the firma
+     * @param produktId id of the produkt
      */
     public void addHerstellung(int firmaId, int produktId) {
         // check if herstellung already exists by checking firmaId and produktId
@@ -208,7 +220,7 @@ public class DBSingleton {
 
     // region Searching methods
 
-    /*
+    /**
      * Search for person by name
      */
     public String personensuche(String personName) {
@@ -230,8 +242,10 @@ public class DBSingleton {
         return result;
     }
 
-    /*
+    /**
      * Search for produkt by name
+     * @param produktName name of the produkt
+     * @return all products
      */
     public String produktsuche(String produktName) {
         String result = "";
@@ -256,7 +270,7 @@ public class DBSingleton {
     /**
      * Search for all products, that friends from the passed person buyed
      * 
-     * @param personId
+     * @param personId id of the person
      * @return all products
      */
     private List<Produkt> produkteFromFreundschaft(Integer personId) {
@@ -297,8 +311,8 @@ public class DBSingleton {
     /**
      * Search for all products, that friends from the passed person buyed
      * 
-     * @param personId
-     * @return all product names comma separated
+     * @param personId id of the person
+     * @return all products
      */
     public String produktnetzwerk(Integer personId) {
         String result = "";
@@ -330,8 +344,8 @@ public class DBSingleton {
      * Search for all companies, that produce products, that friends from the passed
      * person have buyed
      * 
-     * @param personId
-     * @return
+     * @param personId id of the person
+     * @return all companies
      */
     public String firmennetzwerk(Integer personId) {
         String result = "";
